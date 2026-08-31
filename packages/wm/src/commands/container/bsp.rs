@@ -10,7 +10,7 @@ use crate::{
 
 /// Creates a binary split around the most recently focused tiling window
 /// and returns the position where a new window should be inserted.
-pub fn insertion_target(
+pub fn bsp_insertion_target(
   workspace: &Workspace,
   config: &UserConfig,
 ) -> anyhow::Result<(Container, usize)> {
