@@ -21,7 +21,8 @@ pub fn bsp_insertion_target(
     return Ok((workspace.clone().into(), workspace.child_count()));
   };
 
-  let target_parent = target.parent().context("Tiling window has no parent.")?;
+  let target_parent =
+    target.parent().context("Tiling window has no parent.")?;
   let target_rect = target.to_rect()?;
 
   // Split along the longest side so each successive insertion continues
@@ -32,7 +33,8 @@ pub fn bsp_insertion_target(
     TilingDirection::Vertical
   };
 
-  let split = SplitContainer::new_bsp(direction, config.value.gaps.clone());
+  let split =
+    SplitContainer::new_bsp(direction, config.value.gaps.clone());
   wrap_in_split_container(
     &split,
     &target_parent,
