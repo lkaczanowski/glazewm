@@ -1,11 +1,15 @@
 use anyhow::Context;
 use tracing::info;
-use wm_common::{try_warn, WindowRuleEvent, WindowState, WmEvent};
+use wm_common::{
+  try_warn, TilingLayout, WindowRuleEvent, WindowState, WmEvent,
+};
 use wm_platform::{NativeWindow, RectDelta};
 
 use crate::{
   commands::{
-    container::{attach_container, set_focused_descendant},
+    container::{
+      attach_container, bsp_insertion_target, set_focused_descendant,
+    },
     window::run_window_rules,
   },
   models::{
@@ -169,15 +173,28 @@ fn create_window(
   let window_state =
     window_state_to_create(&native_properties, &nearest_monitor, config)?;
 
-  // Attach the new window as the first child of the target parent (if
-  // provided), otherwise, add as a sibling of the focused container.
-  let (target_parent, target_index) = match target_parent {
-    Some(parent) => (parent, 0),
-    None => insertion_target(&window_state, state)?,
+  let target_workspace = match &target_parent {
+    Some(parent) => parent.workspace().context("No target workspace.")?,
+    None => state
+      .focused_container()
+      .context("No focused container.")?
+      .workspace()
+      .context("No target workspace.")?,
   };
 
-  let target_workspace =
-    target_parent.workspace().context("No target workspace.")?;
+  // When BSP is active, insert the new tiling window by splitting the
+  // most recently focused leaf instead of adding another sibling.
+  let (target_parent, target_index) = if window_state == WindowState::Tiling
+    && target_parent.is_none()
+    && target_workspace.tiling_layout() == TilingLayout::Bsp
+  {
+    bsp_insertion_target(&target_workspace, config)?
+  } else {
+    match target_parent {
+      Some(parent) => (parent, 0),
+      None => insertion_target(&window_state, state)?,
+    }
+  };
 
   let prefers_centered = config
     .value
