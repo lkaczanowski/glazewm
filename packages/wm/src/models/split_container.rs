@@ -35,12 +35,34 @@ struct SplitContainerInner {
   tiling_size: f32,
   tiling_direction: TilingDirection,
   gaps_config: GapsConfig,
+  is_bsp: bool,
 }
 
 impl SplitContainer {
   pub fn new(
     tiling_direction: TilingDirection,
     gaps_config: GapsConfig,
+  ) -> Self {
+    Self::new_with_bsp(tiling_direction, gaps_config, false)
+  }
+
+  /// Creates a split whose binary structure is owned by the BSP layout.
+  pub fn new_bsp(
+    tiling_direction: TilingDirection,
+    gaps_config: GapsConfig,
+  ) -> Self {
+    Self::new_with_bsp(tiling_direction, gaps_config, true)
+  }
+
+  #[must_use]
+  pub fn is_bsp(&self) -> bool {
+    self.0.borrow().is_bsp
+  }
+
+  fn new_with_bsp(
+    tiling_direction: TilingDirection,
+    gaps_config: GapsConfig,
+    is_bsp: bool,
   ) -> Self {
     let split = SplitContainerInner {
       id: Uuid::new_v4(),
@@ -50,6 +72,7 @@ impl SplitContainer {
       tiling_size: 1.0,
       tiling_direction,
       gaps_config,
+      is_bsp,
     };
 
     Self(Rc::new(RefCell::new(split)))
