@@ -426,6 +426,13 @@ fn reposition_window(
         | SWP_NOSENDCHANGING
         | SWP_ASYNCWINDOWPOS;
 
+      // Calling SetWindowPos with SWP_FRAMECHANGED can cause visible
+      // redraws even when the window already has the requested geometry.
+      // Compare the Win32 window rect, which uses the same bounds that
+      // SetWindowPos accepts, before applying a position update.
+      let needs_position_update =
+        window.native().frame_with_shadows()? != rect;
+
       match &window.state() {
         WindowState::Minimized => {
           if !window.native().is_minimized()? {
@@ -440,19 +447,23 @@ fn reposition_window(
             window.native().maximize()?;
           }
 
-          window.native().set_window_pos(z_order, &rect, swp_flags)?;
+          if needs_position_update {
+            window.native().set_window_pos(z_order, &rect, swp_flags)?;
+          }
         }
         _ => {
-          swp_flags |= SWP_FRAMECHANGED;
+          if needs_position_update {
+            swp_flags |= SWP_FRAMECHANGED;
 
-          window.native().set_window_pos(z_order, &rect, swp_flags)?;
-
-          // When there's a mismatch between the DPI of the monitor and the
-          // window, the window might be sized incorrectly after the first
-          // move. If we set the position twice, inconsistencies after the
-          // first move are resolved.
-          if window.has_pending_dpi_adjustment() {
             window.native().set_window_pos(z_order, &rect, swp_flags)?;
+
+            // When there's a mismatch between the DPI of the monitor and the
+            // window, the window might be sized incorrectly after the first
+            // move. If we set the position twice, inconsistencies after the
+            // first move are resolved.
+            if window.has_pending_dpi_adjustment() {
+              window.native().set_window_pos(z_order, &rect, swp_flags)?;
+            }
           }
         }
       }
