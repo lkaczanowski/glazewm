@@ -8,7 +8,7 @@ use crate::{models::Container, traits::CommonGetters};
 /// Activating BSP affects future tiling-window insertions. Existing
 /// windows retain their current arrangement.
 pub fn set_tiling_layout(
-  container: Container,
+  container: &Container,
   layout: TilingLayout,
 ) -> anyhow::Result<()> {
   let workspace = container.workspace().context("No workspace.")?;
