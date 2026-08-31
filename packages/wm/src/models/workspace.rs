@@ -7,7 +7,8 @@ use std::{
 use anyhow::Context;
 use uuid::Uuid;
 use wm_common::{
-  ContainerDto, GapsConfig, TilingDirection, WorkspaceConfig, WorkspaceDto,
+  ContainerDto, GapsConfig, TilingDirection, TilingLayout, WorkspaceConfig,
+  WorkspaceDto,
 };
 use wm_platform::{Rect, RectDelta};
 
@@ -32,6 +33,7 @@ struct WorkspaceInner {
   config: WorkspaceConfig,
   gaps_config: GapsConfig,
   tiling_direction: TilingDirection,
+  tiling_layout: TilingLayout,
 }
 
 impl Workspace {
@@ -48,6 +50,7 @@ impl Workspace {
       config,
       gaps_config,
       tiling_direction,
+      tiling_layout: TilingLayout::None,
     };
 
     Self(Rc::new(RefCell::new(workspace)))
@@ -61,6 +64,16 @@ impl Workspace {
   /// Update the underlying config for the workspace.
   pub fn set_config(&self, config: WorkspaceConfig) {
     self.0.borrow_mut().config = config;
+  }
+
+  /// Gets the automated layout policy for this workspace.
+  pub fn tiling_layout(&self) -> TilingLayout {
+    self.0.borrow().tiling_layout
+  }
+
+  /// Updates the automated layout policy for this workspace.
+  pub fn set_tiling_layout(&self, layout: TilingLayout) {
+    self.0.borrow_mut().tiling_layout = layout;
   }
 
   /// Whether the workspace is currently displayed by the parent monitor.
@@ -173,6 +186,7 @@ impl Workspace {
       x: rect.x(),
       y: rect.y(),
       tiling_direction: self.tiling_direction(),
+      tiling_layout: self.tiling_layout(),
     }))
   }
 }
