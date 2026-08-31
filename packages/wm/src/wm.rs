@@ -18,7 +18,7 @@ use crate::{
   commands::{
     container::{
       focus_container_by_id, focus_in_direction, set_tiling_direction,
-      toggle_tiling_direction,
+      set_tiling_layout, toggle_tiling_direction,
     },
     general::{
       cycle_focus, disable_binding_mode, enable_binding_mode,
@@ -742,6 +742,9 @@ impl WindowManager {
           config,
           tiling_direction,
         )
+      }
+      InvokeCommand::SetTilingLayout { tiling_layout } => {
+        set_tiling_layout(subject_container, *tiling_layout)
       }
       InvokeCommand::WmCycleFocus {
         omit_floating,
