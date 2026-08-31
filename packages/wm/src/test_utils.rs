@@ -5,8 +5,8 @@
 
 use bon::bon;
 use wm_common::{
-  FloatingStateConfig, GapsConfig, TilingDirection, WindowState,
-  WorkspaceConfig,
+  FloatingStateConfig, GapsConfig, TilingDirection, TilingLayout,
+  WindowState, WorkspaceConfig,
 };
 use wm_platform::{Display, NativeWindow, Rect, RectDelta};
 
@@ -241,6 +241,7 @@ impl Workspace {
       display_name,
       bind_to_monitor: None,
       keep_alive: false,
+      tiling_layout: TilingLayout::default(),
     };
 
     let workspace = Self::new(config, gaps_config, tiling_direction);
