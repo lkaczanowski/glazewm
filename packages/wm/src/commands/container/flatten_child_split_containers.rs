@@ -28,8 +28,10 @@ pub fn flatten_child_split_containers(
       // Handle case where the parent is a split container and has a
       // single split container child.
       if let Some(split_child) = tiling_children[0].as_split() {
-        flatten_split_container(split_child.clone())?;
-        parent.set_tiling_direction(parent.tiling_direction().inverse());
+        if !split_child.is_bsp() {
+          flatten_split_container(split_child.clone())?;
+          parent.set_tiling_direction(parent.tiling_direction().inverse());
+        }
       }
     } else {
       let split_children = tiling_children
@@ -38,7 +40,8 @@ pub fn flatten_child_split_containers(
         .collect::<Vec<_>>();
 
       for split_child in split_children.iter().filter(|split_child| {
-        split_child.tiling_direction() == parent.tiling_direction()
+        !split_child.is_bsp()
+          && split_child.tiling_direction() == parent.tiling_direction()
       }) {
         // Additionally flatten redundant top-level split containers in
         // the child.
