@@ -744,7 +744,7 @@ impl WindowManager {
         )
       }
       InvokeCommand::SetTilingLayout { tiling_layout } => {
-        set_tiling_layout(subject_container, *tiling_layout)
+        set_tiling_layout(&subject_container, *tiling_layout)
       }
       InvokeCommand::WmCycleFocus {
         omit_floating,
