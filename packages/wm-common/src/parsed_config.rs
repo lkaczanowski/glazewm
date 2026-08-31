@@ -385,6 +385,10 @@ pub struct WorkspaceConfig {
 
   #[serde(default = "default_bool::<false>")]
   pub keep_alive: bool,
+
+  /// Automated layout policy used when the workspace is created.
+  #[serde(default)]
+  pub tiling_layout: crate::TilingLayout,
 }
 
 /// Helper function for setting a default value for a boolean field.
