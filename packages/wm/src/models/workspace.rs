@@ -42,6 +42,8 @@ impl Workspace {
     gaps_config: GapsConfig,
     tiling_direction: TilingDirection,
   ) -> Self {
+    let tiling_layout = config.tiling_layout;
+
     let workspace = WorkspaceInner {
       id: Uuid::new_v4(),
       parent: None,
@@ -50,7 +52,7 @@ impl Workspace {
       config,
       gaps_config,
       tiling_direction,
-      tiling_layout: TilingLayout::None,
+      tiling_layout,
     };
 
     Self(Rc::new(RefCell::new(workspace)))
