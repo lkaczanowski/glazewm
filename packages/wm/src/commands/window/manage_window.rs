@@ -184,7 +184,8 @@ fn create_window(
 
   // When BSP is active, insert the new tiling window by splitting the
   // most recently focused leaf instead of adding another sibling.
-  let (target_parent, target_index) = if window_state == WindowState::Tiling
+  let (target_parent, target_index) = if window_state
+    == WindowState::Tiling
     && target_parent.is_none()
     && target_workspace.tiling_layout() == TilingLayout::Bsp
   {
